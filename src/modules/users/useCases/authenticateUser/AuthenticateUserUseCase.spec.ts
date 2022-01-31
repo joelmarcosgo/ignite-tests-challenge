@@ -20,8 +20,8 @@ describe("Authenticate User", () => {
 
   it("should be able to authenticate an user", async () => {
     const user: ICreateUserDTO = {
-      email: "user@teste.com",
-      password: "1234",
+      email: "user@email.com",
+      password: "password",
       name: "User Test",
     };
 
@@ -38,8 +38,8 @@ describe("Authenticate User", () => {
   it("should not be able to authenticate an non existent user", async () => {
     expect(async () => {
       await authenticateUserUseCase.execute({
-        email: "false@email.com",
-        password: "1234",
+        email: "usernotexist@email.com",
+        password: "password",
       });
     }).rejects.toBeInstanceOf(IncorrectEmailOrPasswordError);
   });
@@ -47,8 +47,8 @@ describe("Authenticate User", () => {
   it("should not be able to authenticate with incorrect password", async () => {
     expect(async () => {
       const user: ICreateUserDTO = {
-        email: "user@user.com",
-        password: "1234",
+        email: "user@email.com",
+        password: "test",
         name: "User Test Error",
       };
 

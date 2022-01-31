@@ -20,28 +20,28 @@ describe("Create User ", () => {
 
   it("should be able to create user", async () => {
     const response = await request(app).post("/api/v1/users").send({
-      name: "NormalUser",
-      email: "normaluser@email.com",
-      password: "normalpassword"
+      name: "TestUser",
+      email: "testuser@email.com",
+      password: "testpassword"
     })
 
     expect(response.status).toBe(201)
     expect(response.body).toHaveProperty("id")
-    expect(response.body.name).toEqual("NormalUser")
-    expect(response.body.email).toEqual("normaluser@email.com")
+    expect(response.body.name).toEqual("TestUser")
+    expect(response.body.email).toEqual("testuser@email.com")
   });
 
   it("should not be able to create user with same email", async () => {
     await request(app).post("/api/v1/users").send({
-      name: "NormalUser",
-      email: "normaluser@email.com",
-      password: "normalpassword"
+      name: "TestUser",
+      email: "testuser@email.com",
+      password: "testpassword"
     })
 
     const response = await request(app).post("/api/v1/users").send({
-      name: "NormalUser",
-      email: "normaluser@email.com",
-      password: "normalpassword"
+      name: "TestUser",
+      email: "testuser@email.com",
+      password: "testpassword"
     })
 
     expect(response.status).toBe(400)

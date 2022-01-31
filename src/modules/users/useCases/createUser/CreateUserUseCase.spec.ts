@@ -15,9 +15,9 @@ describe("Create User", () => {
 
   it("should be able to create a new user", async () => {
     const user = {
-      name: "test_user",
-      email:"test_user@email.com",
-      password: "abc12345",
+      name: "test-user",
+      email:"test-user@email.com",
+      password: "password1235",
     };
 
     await createUserUseCase.execute({
@@ -34,9 +34,9 @@ describe("Create User", () => {
   it("should not be able to create a new user with email that already exists", async () => {
     expect(async () => {
       const user = {
-        name: "test_user1",
-        email:"test_user@email.com",
-        password: "abc12345",
+        name: "test-user",
+        email:"test-user@email.com",
+        password: "password1235",
       };
 
 

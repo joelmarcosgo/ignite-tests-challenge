@@ -19,9 +19,9 @@ describe("Show User's Profile", () => {
 
   it("should be able to list user's profile", async () => {
     const user = {
-      name: "test_user",
-      email:"test_user@email.com",
-      password: "abc12345",
+      name: "test-user",
+      email:"test-user@email.com",
+      password: "password1235",
     };
 
     const userCreated = await createUserUseCase.execute({
@@ -43,7 +43,7 @@ describe("Show User's Profile", () => {
 
   it("should not be able to list un-existing user's profile", async () => {
     expect(async () => {
-      const user_id = "abc12123231231"
+      const user_id = "usertest1234567890"
       await showUserProfileUseCase.execute(user_id)
     }).rejects.toBeInstanceOf(ShowUserProfileError)
   })

@@ -6,7 +6,7 @@ import createConnection from "../../../../database";
 import { app } from "../../../../app";
 
 let connection: Connection;
-let normalUser: {
+let user: {
   id: string;
   name: string;
   email: string;
@@ -19,16 +19,16 @@ describe("Create Statement", () => {
     await connection.runMigrations();
 
     const userCreated = await request(app).post("/api/v1/users").send({
-      name: "NormalUser",
-      email: "normaluser@email.com",
-      password: "normalpassword"
+      name: "TestUser",
+      email: "testuser@email.com",
+      password: "password"
     })
 
-    normalUser = {
+    user = {
       id: userCreated.body.id,
       name: userCreated.body.name,
       email: userCreated.body.email,
-      password: "normalpassword"
+      password: "password"
     }
   });
 
@@ -39,8 +39,8 @@ describe("Create Statement", () => {
 
   it("should be able to deposit", async () => {
     const responseToken = await request(app).post("/api/v1/sessions").send({
-      email: normalUser.email,
-      password: normalUser.password,
+      email: user.email,
+      password: user.password,
     });
 
     const { token } = responseToken.body;
@@ -48,23 +48,23 @@ describe("Create Statement", () => {
     const response = await request(app)
     .post("/api/v1/statements/deposit")
     .send({
-      amount: 100,
-      description: "100ZÃO"
+      amount: 256,
+      description: "Vale-Transporte"
     }).set({
       Authorization: `Bearer ${token}`
     })
 
     expect(response.status).toBe(201)
     expect(response.body).toHaveProperty("id")
-    expect(response.body.user_id).toEqual(normalUser.id)
-    expect(response.body.amount).toBe(100)
+    expect(response.body.user_id).toEqual(user.id)
+    expect(response.body.amount).toBe(256)
     expect(response.body.type).toEqual("deposit")
   });
 
   it("should be able to withdraw", async () => {
     const responseToken = await request(app).post("/api/v1/sessions").send({
-      email: normalUser.email,
-      password: normalUser.password,
+      email: user.email,
+      password: user.password,
     });
 
     const { token } = responseToken.body;
@@ -72,23 +72,23 @@ describe("Create Statement", () => {
     const response = await request(app)
     .post("/api/v1/statements/withdraw")
     .send({
-      amount: 100,
-      description: "100ZÃO"
+      amount: 189,
+      description: "Faculdade"
     }).set({
       Authorization: `Bearer ${token}`
     })
 
     expect(response.status).toBe(201)
     expect(response.body).toHaveProperty("id")
-    expect(response.body.user_id).toEqual(normalUser.id)
-    expect(response.body.amount).toBe(100)
+    expect(response.body.user_id).toEqual(user.id)
+    expect(response.body.amount).toBe(189)
     expect(response.body.type).toEqual("withdraw")
   });
 
   it("should not be able to deposit/withdraw with non-existing user", async () => {
     const responseToken = await request(app).post("/api/v1/sessions").send({
-      email: "usernonexistent@email.com",
-      password: "usernonexistentpassword",
+      email: "usernotexist@email.com",
+      password: "usernotexistpassword",
     });
 
     expect(responseToken.status).toBe(401)
@@ -99,8 +99,8 @@ describe("Create Statement", () => {
     const response = await request(app)
     .post("/api/v1/statements/deposit")
     .send({
-      amount: 100,
-      description: "100ZÃO"
+      amount: 2456,
+      description: "Salário"
     }).set({
       Authorization: `Bearer ${token}`
     })
@@ -111,8 +111,8 @@ describe("Create Statement", () => {
 
   it("should not be able to withdraw without money", async () => {
     const responseToken = await request(app).post("/api/v1/sessions").send({
-      email: normalUser.email,
-      password: normalUser.password,
+      email: user.email,
+      password: user.password,
     });
 
     const { token } = responseToken.body;
@@ -120,8 +120,8 @@ describe("Create Statement", () => {
     const response = await request(app)
     .post("/api/v1/statements/withdraw")
     .send({
-      amount: 100,
-      description: "100ZÃO"
+      amount: 242,
+      description: "Curso"
     }).set({
       Authorization: `Bearer ${token}`
     })

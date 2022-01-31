@@ -6,7 +6,7 @@ import createConnection from "../../../../database";
 import { app } from "../../../../app";
 
 let connection: Connection;
-let normalUser: {
+let user: {
   name: string;
   email: string;
   password: string;
@@ -17,13 +17,13 @@ describe("Authenticate User", () => {
     connection = await createConnection();
     await connection.runMigrations();
 
-    normalUser = {
-      name: "NormalUser",
-      email: "normaluser@email.com",
-      password: "normalpassword"
+    user = {
+      name: "TestUser",
+      email: "testuser@email.com",
+      password: "testpassword"
     }
 
-    await request(app).post("/api/v1/users").send(normalUser)
+    await request(app).post("/api/v1/users").send(user)
   });
 
   afterAll(async () => {
@@ -33,22 +33,22 @@ describe("Authenticate User", () => {
 
   it("should be able to authenticate user", async () => {
     const response = await request(app).post("/api/v1/sessions").send({
-      email: normalUser.email,
-      password: normalUser.password,
+      email: user.email,
+      password: user.password,
     });
 
     const { token } = response.body;
 
     expect(response.status).toBe(200)
     expect(response.body).toHaveProperty("token")
-    expect(response.body.user.email).toEqual(normalUser.email)
+    expect(response.body.user.email).toEqual(user.email)
     expect(token).not.toBeUndefined()
   });
 
   it("should not be able to authenticate a non-existing user", async () => {
     const responseToken = await request(app).post("/api/v1/sessions").send({
-      email: "usernonexistent@email.com",
-      password: "usernonexistentpassword",
+      email: "usernotexist@email.com",
+      password: "usernotexistpassword",
     });
 
     expect(responseToken.status).toBe(401)
@@ -58,7 +58,7 @@ describe("Authenticate User", () => {
 
   it("should not be able to authenticate user with wrong password", async () => {
     const responseToken = await request(app).post("/api/v1/sessions").send({
-      email: normalUser.email,
+      email: user.email,
       password: "wrongpassword",
     });
 
