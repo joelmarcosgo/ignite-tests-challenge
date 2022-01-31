@@ -5,7 +5,7 @@ import { Statement } from "../../entities/Statement";
 import { IStatementsRepository } from "../../repositories/IStatementsRepository";
 import { GetBalanceError } from "./GetBalanceError";
 
-interface IRequest {
+export interface IRequestGetBalance {
   user_id: string;
 }
 
@@ -24,7 +24,7 @@ export class GetBalanceUseCase {
     private usersRepository: IUsersRepository,
   ) {}
 
-  async execute({ user_id }: IRequest): Promise<IResponse> {
+  async execute({ user_id }: IRequestGetBalance): Promise<IResponse> {
     const user = await this.usersRepository.findById(user_id);
 
     if(!user) {

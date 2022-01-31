@@ -17,12 +17,14 @@ export class StatementsRepository implements IStatementsRepository {
     user_id,
     amount,
     description,
+    sender_id,
     type
   }: ICreateStatementDTO): Promise<Statement> {
     const statement = this.repository.create({
       user_id,
       amount,
       description,
+      sender_id,
       type
     });
 
@@ -43,18 +45,34 @@ export class StatementsRepository implements IStatementsRepository {
     const statement = await this.repository.find({
       where: { user_id }
     });
+    const statementTransfer = await this.repository.find({
+      select: ["id", "user_id", "description", "amount", "type", "created_at", "updated_at"],
+      where: { sender_id: user_id }
+    })
 
-    const balance = statement.reduce((acc, operation) => {
-      if (operation.type === 'deposit') {
-        return acc + operation.amount;
+    //
+    const depositWithdrawBalance = statement.reduceRight((acc, operation) => {
+      if(operation.type === 'transfer' && operation.sender_id !== user_id){
+        return acc + Number(operation.amount);
       } else {
-        return acc - operation.amount;
+        if(operation.type === 'deposit') {
+          return acc + Number(operation.amount);
+        } else {
+          return acc - Number(operation.amount);
+        }
       }
     }, 0)
 
+    // statementTransfer pegou apenas os statements em que o sender_id é igual ao user_id consultado.
+    // sendo assim, só tem operação de contar quanto deve tirar do total.
+    const transferBalance = await statementTransfer.reduce((acc, operation) => (acc - operation.amount), 0)
+
+    const balance = depositWithdrawBalance + transferBalance;
+    const allStatements = statement.concat(statementTransfer)
+
     if (with_statement) {
       return {
-        statement,
+        statement: allStatements,
         balance
       }
     }
